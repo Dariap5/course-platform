@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import { LessonList } from "@/components/lessons/lesson-list";
-import { getUser } from "@/lib/user-storage";
+import { useSession } from "@/lib/auth/useSession";
 
 export default function DashboardPage() {
-  const [name] = useState(() => getUser()?.name ?? "");
+  const { user, loading } = useSession();
 
-  return <LessonList userName={name || "друг"} />;
+  if (loading) {
+    return (
+      <div className="flex min-h-[30vh] items-center justify-center text-sm text-[hsl(var(--fg-muted))]">
+        Загрузка…
+      </div>
+    );
+  }
+
+  const name = user?.name ?? "друг";
+
+  return <LessonList userName={name} />;
 }

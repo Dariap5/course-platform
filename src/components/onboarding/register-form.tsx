@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { setUser, getUser, isOnboardingComplete } from "@/lib/user-storage";
 import { COURSE_TITLE } from "@/lib/lessons-data";
 import { ProgressDots } from "./progress-dots";
 import {
@@ -14,22 +14,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { supabase } from "@/lib/supabase/client";
+import { useSession } from "@/lib/auth/useSession";
+import { isPaidPlan } from "@/lib/plan-access";
 
 export function RegisterForm() {
   const router = useRouter();
+  const { user, loading: sessionLoading } = useSession();
   const [ready, setReady] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const u = getUser();
-    if (u) {
-      if (isOnboardingComplete()) router.replace("/dashboard");
-      else router.replace("/onboarding");
+    if (sessionLoading) return;
+    if (user) {
+      if (isPaidPlan(user.plan)) router.replace("/dashboard");
+      else router.replace("/activate");
       return;
     }
     queueMicrotask(() => setReady(true));
-  }, [router]);
+  }, [user, sessionLoading, router]);
 
-  if (!ready) {
+  if (!ready || sessionLoading) {
     return (
       <div className="relative z-10 flex min-h-screen items-center justify-center text-sm text-[hsl(var(--fg-muted))]">
         Загрузка…
@@ -37,19 +43,61 @@ export function RegisterForm() {
     );
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
     const fd = new FormData(e.currentTarget);
     const name = String(fd.get("name") ?? "").trim();
     const email = String(fd.get("email") ?? "").trim();
-    if (!name || !email) return;
-    setUser({ name, email });
-    router.push("/onboarding");
+    const password = String(fd.get("password") ?? "");
+    if (!name || !email || !password) return;
+    if (password.length < 8) {
+      setError("Пароль минимум 8 символов");
+      return;
+    }
+    setSubmitting(true);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, name, password }),
+    });
+    const data = (await res.json()) as { error?: string };
+    if (!res.ok) {
+      setSubmitting(false);
+      setError(data.error ?? "Ошибка регистрации");
+      return;
+    }
+    const { error: signErr } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    setSubmitting(false);
+    if (signErr) {
+      setError("Аккаунт создан, но вход не удался. Попробуй страницу «Вход».");
+      return;
+    }
+    router.replace("/onboarding");
   }
 
   const fields = [
-    { name: "name", label: "Имя", type: "text", placeholder: "Как к тебе обращаться" },
-    { name: "email", label: "Email", type: "email", placeholder: "you@example.com" },
+    {
+      name: "name",
+      label: "Имя",
+      type: "text",
+      placeholder: "Как к тебе обращаться",
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "you@example.com",
+    },
+    {
+      name: "password",
+      label: "Пароль",
+      type: "password",
+      placeholder: "Минимум 8 символов",
+    },
   ] as const;
 
   return (
@@ -66,10 +114,10 @@ export function RegisterForm() {
           Добро пожаловать
         </h2>
         <p className="mt-2 text-center text-sm text-[hsl(var(--fg-muted))]">
-          Заполни данные — и начнём обучение
+          Создай аккаунт — затем введи код доступа, если он у тебя есть
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <form onSubmit={(e) => void handleSubmit(e)} className="mt-8 space-y-4">
           {fields.map((f, i) => (
             <motion.div
               key={f.name}
@@ -85,20 +133,45 @@ export function RegisterForm() {
                 name={f.name}
                 type={f.type}
                 placeholder={f.placeholder}
-                autoComplete={f.name === "email" ? "email" : "name"}
+                autoComplete={
+                  f.name === "email"
+                    ? "email"
+                    : f.name === "password"
+                      ? "new-password"
+                      : "name"
+                }
               />
             </motion.div>
           ))}
+          {error ? (
+            <p className="text-center text-xs text-red-500">{error}</p>
+          ) : null}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.35 }}
           >
-            <Button type="submit" variant="gradient" className="w-full" size="lg">
-              Начать курс
+            <Button
+              type="submit"
+              variant="gradient"
+              className="w-full"
+              size="lg"
+              disabled={submitting}
+            >
+              {submitting ? "Создаём аккаунт…" : "Начать курс"}
             </Button>
           </motion.div>
         </form>
+
+        <p className="mt-6 text-center text-sm text-[hsl(var(--fg-muted))]">
+          Уже есть аккаунт?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-[hsl(var(--accent-text))] underline-offset-2 hover:underline"
+          >
+            Войти
+          </Link>
+        </p>
 
         <ProgressDots current={1} total={2} />
 
@@ -114,11 +187,12 @@ export function RegisterForm() {
             </DialogTrigger>
           </div>
           <DialogContent>
-            <DialogTitle>Локальное хранение</DialogTitle>
+            <DialogTitle>Аккаунт и прогресс</DialogTitle>
             <p className="mt-3 text-sm leading-relaxed text-[hsl(var(--fg-muted))]">
-              Имя, email, прогресс и настройки сохраняются только в браузере на
-              твоём устройстве — без серверной базы данных. Письмо после финала
-              уходит один раз через безопасный сервис отправки.
+              Регистрация идёт через Supabase: email и пароль хранятся в защищённой
+              базе. Прогресс уроков синхронизируется с твоим аккаунтом. Письма
+              отправляются через Resend. Тема и аватар в интерфейсе по-прежнему
+              можно хранить локально в браузере.
             </p>
           </DialogContent>
         </Dialog>

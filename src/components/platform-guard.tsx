@@ -1,32 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getUser, isOnboardingComplete } from "@/lib/user-storage";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useSession } from "@/lib/auth/useSession";
+import { isPaidPlan } from "@/lib/plan-access";
+
+/** Страницы, где пользователь с plan=free может быть без кода (обзор, тарифы, профиль). */
+function isPathAllowedForFreeUser(pathname: string): boolean {
+  if (pathname === "/tariffs" || pathname.startsWith("/tariffs/")) return true;
+  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return true;
+  if (pathname === "/profile" || pathname.startsWith("/profile/")) return true;
+  return false;
+}
 
 export function PlatformGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [ok, setOk] = useState(false);
+  const pathname = usePathname();
+  const { user, loading } = useSession();
 
   useEffect(() => {
-    const user = getUser();
+    if (loading) return;
     if (!user) {
-      router.replace("/register");
+      router.replace("/login");
       return;
     }
-    if (!isOnboardingComplete()) {
-      router.replace("/onboarding");
+    if (!isPaidPlan(user.plan) && !isPathAllowedForFreeUser(pathname)) {
+      router.replace("/activate");
       return;
     }
-    queueMicrotask(() => setOk(true));
-  }, [router]);
+  }, [user, loading, router, pathname]);
 
-  if (!ok) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[hsl(var(--bg))] text-sm text-[hsl(var(--fg-muted))]">
-        Загрузка…
+        <div
+          className="h-6 w-6 animate-spin rounded-full border-2 border-[#3B3BF5] border-t-transparent"
+          aria-hidden
+        />
       </div>
     );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  if (!isPaidPlan(user.plan) && !isPathAllowedForFreeUser(pathname)) {
+    return null;
   }
 
   return <>{children}</>;

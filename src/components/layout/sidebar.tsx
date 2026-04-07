@@ -2,17 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, User, MessageCircle, Sparkles, X } from "lucide-react";
+import { Home, User, MessageCircle, Sparkles, KeyRound, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  COURSE_TITLE,
-  LESSONS,
-  SUPPORT_URL,
-} from "@/lib/lessons-data";
+import { COURSE_TITLE, LESSONS, SUPPORT_URL } from "@/lib/lessons-data";
 import { getCompletedLessons } from "@/lib/progress-storage";
-import { hasPurchased } from "@/lib/purchase-storage";
+import { hasCourseAccess } from "@/lib/plan-access";
 import { Progress } from "@/components/ui/progress";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "@/lib/auth/useSession";
 
 const baseNav = [
   { href: "/dashboard", label: "Уроки", icon: Home },
@@ -27,18 +24,23 @@ export function Sidebar({
   onClose?: () => void;
 } = {}) {
   const pathname = usePathname();
-  const { done, paid } = useMemo(() => {
-    void pathname;
-    return {
-      done: getCompletedLessons().length,
-      paid: hasPurchased(),
-    };
-  }, [pathname]);
+  const { user } = useSession();
+  const paid = hasCourseAccess(user);
+  const [done, setDone] = useState(0);
+
+  useEffect(() => {
+    if (!user || !paid) {
+      setDone(0);
+      return;
+    }
+    void getCompletedLessons(user.id).then((ids) => setDone(ids.length));
+  }, [user, paid, pathname]);
 
   const nav = !paid
     ? [
         baseNav[0],
         { href: "/tariffs", label: "Тарифы", icon: Sparkles },
+        { href: "/activate", label: "Код доступа", icon: KeyRound },
         baseNav[1],
       ]
     : baseNav;

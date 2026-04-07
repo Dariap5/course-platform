@@ -20,7 +20,9 @@ export const SUPPORT_EMAIL =
   process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "dariapaivina@gmail.com";
 
 export const FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
+  process.env.FROM_EMAIL ??
+  process.env.RESEND_FROM_EMAIL ??
+  "onboarding@resend.dev";
 
 /** Замени videoUrl на свои ссылки (YouTube embed, Vimeo, MP4) когда будут готовы */
 export const LESSONS: Lesson[] = [

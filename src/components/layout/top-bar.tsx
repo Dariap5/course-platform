@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { Menu } from "lucide-react";
-import { getUser } from "@/lib/user-storage";
 import { getAvatarEmoji } from "@/lib/avatar-storage";
 import {
   DropdownMenu,
@@ -13,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useSession } from "@/lib/auth/useSession";
 
 const titles: Record<string, string> = {
   "/dashboard": "Уроки",
@@ -23,18 +23,18 @@ const titles: Record<string, string> = {
 
 export function TopBar({ onMenuClick }: { onMenuClick?: () => void } = {}) {
   const pathname = usePathname();
+  const { user } = useSession();
   const { name, avatar, label } = useMemo(() => {
-    const u = getUser();
     const base = pathname.split("/").slice(0, 2).join("/") || pathname;
     const labelText = pathname.startsWith("/lesson")
       ? "Урок"
       : (titles[base] ?? titles[pathname] ?? "Платформа");
     return {
-      name: u?.name ?? "",
+      name: user?.name ?? "",
       avatar: getAvatarEmoji(),
       label: labelText,
     };
-  }, [pathname]);
+  }, [pathname, user?.name]);
 
   return (
     <header className="flex h-[52px] shrink-0 items-center justify-between border-b border-[hsl(var(--border))] bg-[hsl(var(--bg))] px-4 md:px-6">

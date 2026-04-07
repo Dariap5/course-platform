@@ -5,14 +5,12 @@ import { motion } from "framer-motion";
 import { Clock, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LESSONS } from "@/lib/lessons-data";
-import {
-  getCompletedLessons,
-  isLessonUnlocked,
-} from "@/lib/progress-storage";
-import { hasPurchased } from "@/lib/purchase-storage";
+import { getCompletedLessons } from "@/lib/progress-storage";
+import { hasCourseAccess } from "@/lib/plan-access";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "@/lib/auth/useSession";
 
 const container = {
   hidden: {},
@@ -25,11 +23,34 @@ const item = {
 };
 
 export function LessonList({ userName }: { userName: string }) {
-  const [completed] = useState(() => getCompletedLessons());
-  const [paid] = useState(() => hasPurchased());
+  const { user, loading } = useSession();
+  const [completed, setCompleted] = useState<number[]>([]);
+  const paid = hasCourseAccess(user);
+
+  useEffect(() => {
+    if (!user || !paid) {
+      setCompleted([]);
+      return;
+    }
+    void getCompletedLessons(user.id).then(setCompleted);
+  }, [user, paid]);
 
   const nextId =
     LESSONS.find((l) => !completed.includes(l.id))?.id ?? LESSONS.length + 1;
+
+  function unlockedFor(lessonId: number): boolean {
+    if (!paid) return false;
+    if (lessonId === 1) return true;
+    return completed.includes(lessonId - 1);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[30vh] items-center justify-center text-sm text-[hsl(var(--fg-muted))]">
+        Загрузка…
+      </div>
+    );
+  }
 
   return (
     <div className="fade-up mx-auto max-w-4xl">
@@ -39,17 +60,17 @@ export function LessonList({ userName }: { userName: string }) {
       <p className="mt-1 text-sm text-[hsl(var(--fg-muted))]">
         {paid
           ? "Продолжай там, где остановился"
-          : "Ты видишь программу целиком — открой доступ, чтобы начать первый урок"}
+          : "Ты видишь программу целиком — активируй код доступа, чтобы начать первый урок"}
       </p>
 
       {!paid && (
         <div className="mt-6 flex flex-col gap-3 rounded-[var(--r-lg)] border border-[hsl(var(--border))] bg-[hsl(var(--bg-secondary))] p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-[hsl(var(--fg-muted))]">
-            Все уроки ниже доступны после оплаты. Разблокируются по одному —
+            Все уроки ниже доступны после ввода кода. Разблокируются по одному —
             так проще дойти до конца.
           </p>
           <Button variant="gradient" asChild className="shrink-0">
-            <Link href="/tariffs">Выбрать тариф</Link>
+            <Link href="/activate">Ввести код</Link>
           </Button>
         </div>
       )}
@@ -61,10 +82,9 @@ export function LessonList({ userName }: { userName: string }) {
         className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2"
       >
         {LESSONS.map((lesson) => {
-          const unlocked = paid && isLessonUnlocked(lesson.id);
+          const unlocked = unlockedFor(lesson.id);
           const done = completed.includes(lesson.id);
-          const current =
-            paid && lesson.id === nextId && !done && unlocked;
+          const current = paid && lesson.id === nextId && !done && unlocked;
 
           const inner = (
             <>
@@ -85,7 +105,7 @@ export function LessonList({ userName }: { userName: string }) {
                   <Badge variant="outline">Доступен</Badge>
                 ) : (
                   <Badge variant="muted">
-                    {!paid ? "Нужна оплата" : "Заблокирован"}
+                    {!paid ? "Нужен код" : "Заблокирован"}
                   </Badge>
                 )}
               </div>
@@ -121,7 +141,10 @@ export function LessonList({ userName }: { userName: string }) {
                   {inner}
                 </Link>
               ) : (
-                <Link href="/tariffs" className={cardClass}>
+                <Link
+                  href={paid ? "/dashboard" : "/activate"}
+                  className={cardClass}
+                >
                   {inner}
                 </Link>
               )}

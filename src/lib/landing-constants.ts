@@ -7,18 +7,19 @@ export function getLandingTelegramCtaUrl(): string {
   );
 }
 
-/** Ссылки на оплату: ЮKassa, Robokassa, Tribute, Stripe и т.д. Пустое значение → демо-страница /pay/success */
+/**
+ * Ссылка на реальную оплату (ЮKassa, Robokassa, Tribute…).
+ * Пустая строка = в интерфейсе показываем Telegram и ввод кода, без «фейковой» оплаты.
+ */
 export function getCheckoutStandardUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_CHECKOUT_STANDARD_URL?.trim() || "/pay/success"
-  );
+  return process.env.NEXT_PUBLIC_CHECKOUT_STANDARD_URL?.trim() ?? "";
 }
 
 export function getCheckoutPremiumUrl(): string {
   return (
     process.env.NEXT_PUBLIC_CHECKOUT_PREMIUM_URL?.trim() ||
     process.env.NEXT_PUBLIC_CHECKOUT_STANDARD_URL?.trim() ||
-    "/pay/success"
+    ""
   );
 }
 

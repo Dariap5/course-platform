@@ -8,13 +8,15 @@ import {
   getCheckoutStandardUrl,
   LANDING_PRODUCT_NAME,
 } from "@/lib/landing-constants";
-import { hasPurchased } from "@/lib/purchase-storage";
-import { useState } from "react";
+import { hasCourseAccess } from "@/lib/plan-access";
+import { useSession } from "@/lib/auth/useSession";
+import { SUPPORT_URL } from "@/lib/lessons-data";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function TariffsPageContent() {
-  const [paid] = useState(() => hasPurchased());
+  const { user, loading } = useSession();
+  const paid = hasCourseAccess(user);
   const standard = getCheckoutStandardUrl();
   const premium = getCheckoutPremiumUrl();
 
@@ -27,11 +29,20 @@ export function TariffsPageContent() {
     });
   }
 
+  if (loading) {
+    return (
+      <div className="flex min-h-[30vh] items-center justify-center text-sm text-[hsl(var(--fg-muted))]">
+        Загрузка…
+      </div>
+    );
+  }
+
   return (
     <div className="fade-up mx-auto max-w-4xl">
       <h1 className="text-xl font-medium text-[hsl(var(--fg))]">Тарифы</h1>
       <p className="mt-1 text-sm text-[hsl(var(--fg-muted))]">
-        Оформи доступ — уроки откроются в том же кабинете сразу после оплаты.
+        Оплата на карту — напиши в Telegram, после перевода я пришлю код доступа.
+        Ввести код можно в разделе «Код доступа» или на странице активации.
       </p>
 
       {paid && (
@@ -79,84 +90,126 @@ export function TariffsPageContent() {
                 "PDF и созвон",
               ].map((x) => (
                 <li key={x} className="flex items-center gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full gradient-bg text-white">
-                    <Check className="h-3 w-3" strokeWidth={3} />
-                  </span>
+                  <Check className="h-4 w-4 shrink-0 text-emerald-500" />
                   {x}
                 </li>
               ))}
             </ul>
-            <a
-              href={standard}
-              onClick={burst}
-              className="mt-6 block w-full"
-            >
-              <Button variant="gradient" className="w-full" size="lg">
-                Оплатить 1 990 ₽
-              </Button>
-            </a>
+            <div className="mt-8 flex flex-col gap-2">
+              {standard ? (
+                <Button variant="gradient" className="w-full" size="lg" asChild>
+                  <a
+                    href={standard}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Оплатить онлайн
+                  </a>
+                </Button>
+              ) : (
+                <>
+                  <Button variant="gradient" className="w-full" size="lg" asChild>
+                    <a
+                      href={SUPPORT_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Написать в Telegram (оплата)
+                    </a>
+                  </Button>
+                  <Button variant="outline" className="w-full" size="lg" asChild>
+                    <Link href="/activate">У меня уже есть код</Link>
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.06 }}
-          className="rounded-[var(--r-lg)] border-2 border-amber-200/80 bg-[hsl(var(--bg))] p-6 shadow-md"
+          transition={{ delay: 0.05 }}
+          className="rounded-[var(--r-lg)] border border-[hsl(var(--border))] bg-[hsl(var(--bg-secondary))] p-6"
         >
-          <span className="inline-block rounded-full bg-gradient-to-r from-amber-500 to-red-500 px-3 py-1 text-xs font-semibold text-white">
-            С клубом
+          <span className="inline-block rounded-full bg-[hsl(var(--bg-tertiary))] px-3 py-1 text-xs font-semibold text-[hsl(var(--fg-muted))]">
+            С комьюнити
           </span>
           <h2 className="mt-4 text-lg font-semibold text-[hsl(var(--fg))]">
-            Курс + месяц Клуба
+            Курс + поддержка
           </h2>
           <p className="text-sm text-[hsl(var(--fg-muted))]">
-            Максимум поддержки
+            Всё из базового тарифа и закрытый чат
           </p>
-          <p className="mt-4 text-4xl font-black text-[hsl(var(--fg))]">
-            4 990 ₽
+          <p className="mt-4">
+            <span className="gradient-text font-sans text-4xl font-black">
+              4 990 ₽
+            </span>
           </p>
           <ul className="mt-6 space-y-2 text-sm text-[hsl(var(--fg-muted))]">
             {[
-              "Всё из тарифа «Старт»",
-              "Клуб 30 дней",
-              "Приоритет на созвоне",
+              "Всё из мини-курса",
+              "Комьюнити и ответы",
+              "Приоритет в поддержке",
             ].map((x) => (
               <li key={x} className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-red-500 text-[10px] text-white">
-                  ✓
-                </span>
+                <Check className="h-4 w-4 shrink-0 text-emerald-500" />
                 {x}
               </li>
             ))}
           </ul>
-          <a href={premium} onClick={burst} className="mt-6 block w-full">
-            <Button
-              className="w-full bg-gradient-to-r from-amber-500 to-red-500 text-white hover:opacity-95"
-              size="lg"
-            >
-              Оплатить 4 990 ₽
-            </Button>
-          </a>
+          <div className="mt-8 flex flex-col gap-2">
+            {premium ? (
+              <Button
+                variant="outline"
+                className="w-full border-[hsl(var(--accent-from))]/40"
+                size="lg"
+                asChild
+              >
+                <a
+                  href={premium}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Оплатить онлайн (премиум)
+                </a>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  className="w-full border-[hsl(var(--accent-from))]/40"
+                  size="lg"
+                  asChild
+                >
+                  <a
+                    href={SUPPORT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={burst}
+                  >
+                    Написать в Telegram (оплата)
+                  </a>
+                </Button>
+                <Button variant="outline" className="w-full" size="lg" asChild>
+                  <Link href="/activate">У меня уже есть код</Link>
+                </Button>
+              </>
+            )}
+          </div>
         </motion.div>
       </div>
 
       <p className="mt-8 text-center text-xs text-[hsl(var(--fg-muted))]">
-        Нет платёжки? Ссылка по умолчанию ведёт на{" "}
-        <Link href="/pay/success" className="underline">
-          демо-подтверждение
-        </Link>
-        . Укажи{" "}
-        <code className="rounded bg-[hsl(var(--bg-tertiary))] px-1">
-          NEXT_PUBLIC_CHECKOUT_*_URL
-        </code>{" "}
-        в .env.local
+        Тестовая страница после «оплаты» без реального платёжного шлюза:{" "}
+        <Link
+          href="/pay/success"
+          className="text-[hsl(var(--accent-text))] underline-offset-2 hover:underline"
+        >
+          /pay/success
+        </Link>{" "}
+        — доступ к урокам не открывает, нужен код из Telegram.
       </p>
-      <div className="mt-6 flex justify-center">
-        <Button variant="outline" asChild>
-          <Link href="/">На лендинг</Link>
-        </Button>
-      </div>
     </div>
   );
 }

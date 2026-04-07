@@ -3,24 +3,33 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isLesson4Complete } from "@/lib/progress-storage";
-import { hasPurchased } from "@/lib/purchase-storage";
+import { hasCourseAccess } from "@/lib/plan-access";
 import { CompletionPageContent } from "./completion-page";
+import { useSession } from "@/lib/auth/useSession";
 
 export function CompletionGuard() {
   const router = useRouter();
+  const { user, loading } = useSession();
   const [ok, setOk] = useState(false);
 
   useEffect(() => {
-    if (!hasPurchased()) {
+    if (loading) return;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+    if (!hasCourseAccess(user)) {
       router.replace("/tariffs");
       return;
     }
-    if (!isLesson4Complete()) {
-      router.replace("/dashboard");
-      return;
-    }
-    queueMicrotask(() => setOk(true));
-  }, [router]);
+    void isLesson4Complete(user.id).then((complete) => {
+      if (!complete) {
+        router.replace("/dashboard");
+        return;
+      }
+      setOk(true);
+    });
+  }, [router, user, loading]);
 
   if (!ok) {
     return (

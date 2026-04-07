@@ -2,21 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUser } from "@/lib/user-storage";
+import { useSession } from "@/lib/auth/useSession";
 
 export function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const { user, loading } = useSession();
   const [ok, setOk] = useState(false);
 
   useEffect(() => {
-    if (!getUser()) {
-      router.replace("/register");
+    if (loading) return;
+    if (!user) {
+      router.replace("/login");
       return;
     }
     queueMicrotask(() => setOk(true));
-  }, [router]);
+  }, [router, user, loading]);
 
-  if (!ok) {
+  if (loading || !ok) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-[hsl(var(--fg-muted))]">
         Загрузка…

@@ -66,7 +66,7 @@ export function LandingHeader() {
             Регистрация
           </Link>
           <Link
-            href="/dashboard"
+            href="/login"
             className="rounded-full border border-[var(--lg-border)] px-3 py-2 text-[13px] font-semibold text-[var(--lg-fg)] transition-colors hover:bg-[var(--lg-bg)]"
           >
             Войти

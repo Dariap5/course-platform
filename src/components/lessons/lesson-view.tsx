@@ -9,16 +9,14 @@ import { LessonPlayer, NotionButton } from "./lesson-player";
 import {
   markLessonComplete,
   isLessonUnlocked,
-  wasCompletionEmailSent,
-  markCompletionEmailSent,
   getCompletedLessons,
 } from "@/lib/progress-storage";
-import { getUser } from "@/lib/user-storage";
 import type { Lesson } from "@/types";
 import { LESSONS } from "@/lib/lessons-data";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
-import { hasPurchased } from "@/lib/purchase-storage";
+import { hasCourseAccess } from "@/lib/plan-access";
+import { useSession } from "@/lib/auth/useSession";
 
 function fireLesson4Confetti() {
   const fire = (particleRatio: number, opts: confetti.Options) =>
@@ -36,28 +34,46 @@ function fireLesson4Confetti() {
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
   const router = useRouter();
-  const paid = hasPurchased();
-  const unlocked = isLessonUnlocked(lesson.id);
-  const [status, setStatus] = useState<"idle" | "loading" | "done">(() => {
-    if (typeof window === "undefined") return "idle";
-    return getCompletedLessons().includes(lesson.id) ? "done" : "idle";
-  });
+  const { user, loading: sessionLoading } = useSession();
+  const paid = hasCourseAccess(user);
+  const [unlocked, setUnlocked] = useState(false);
+  const [completedIds, setCompletedIds] = useState<number[]>([]);
+  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
 
   useEffect(() => {
-    if (!hasPurchased()) {
+    if (sessionLoading) return;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+    if (!paid) {
       router.replace("/tariffs");
       return;
     }
-    if (!isLessonUnlocked(lesson.id)) {
-      router.replace("/dashboard");
-    }
-  }, [lesson.id, router]);
+    let cancelled = false;
+    void (async () => {
+      const ids = await getCompletedLessons(user.id);
+      if (cancelled) return;
+      setCompletedIds(ids);
+      const u = await isLessonUnlocked(user.id, lesson.id);
+      if (cancelled) return;
+      setUnlocked(u);
+      if (!u) {
+        router.replace("/dashboard");
+        return;
+      }
+      setStatus(ids.includes(lesson.id) ? "done" : "idle");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, sessionLoading, paid, lesson.id, router]);
 
   const total = LESSONS.length;
-  const doneCount = getCompletedLessons().length;
+  const doneCount = completedIds.length;
   const progressLabel = `${doneCount}/${total}`;
 
-  if (!paid || !unlocked) {
+  if (sessionLoading || !user || !paid || !unlocked) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center text-sm text-[hsl(var(--fg-muted))]">
         {!paid
@@ -68,26 +84,34 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   }
 
   async function handleComplete() {
-    if (status !== "idle" || getCompletedLessons().includes(lesson.id)) return;
+    if (status !== "idle" || completedIds.includes(lesson.id) || !user) return;
     setStatus("loading");
     await new Promise((r) => setTimeout(r, 500));
 
-    markLessonComplete(lesson.id);
+    try {
+      await markLessonComplete(user.id, lesson.id);
+    } catch {
+      setStatus("idle");
+      return;
+    }
+
+    setCompletedIds((prev) =>
+      prev.includes(lesson.id) ? prev : [...prev, lesson.id],
+    );
 
     if (lesson.id === 4) {
       fireLesson4Confetti();
-      const user = getUser();
-      if (user && !wasCompletionEmailSent()) {
-        try {
-          const res = await fetch("/api/send-completion-email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: user.name, email: user.email }),
-          });
-          if (res.ok) markCompletionEmailSent();
-        } catch {
+      try {
+        const res = await fetch("/api/course/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user.id }),
+        });
+        if (!res.ok) {
           /* письмо — best effort */
         }
+      } catch {
+        /* ignore */
       }
     }
 

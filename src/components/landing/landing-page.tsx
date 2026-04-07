@@ -1072,7 +1072,7 @@ function Footer() {
         <Link href="/register" className="hover:text-[var(--lg-from)]">
           Кабинет
         </Link>
-        <Link href="/dashboard" className="hover:text-[var(--lg-from)]">
+        <Link href="/login" className="hover:text-[var(--lg-from)]">
           Войти
         </Link>
         <a href="#pricing" className="hover:text-[var(--lg-from)]">
