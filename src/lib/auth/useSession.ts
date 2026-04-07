@@ -8,12 +8,7 @@ export function useSession() {
   const [user, setUser] = useState<UserRow | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadProfile = useCallback(async (userId: string) => {
-    const { data } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .single();
+  const applyProfile = useCallback((profile: UserRow | null) => {
     if (typeof window !== "undefined") {
       try {
         localStorage.removeItem("course_paid");
@@ -21,40 +16,83 @@ export function useSession() {
         /* noop */
       }
     }
-    setUser(data ?? null);
+    setUser(profile);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadProfile = useCallback(
+    async (userId: string) => {
+      const { data } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .single();
+      applyProfile(data ?? null);
+    },
+    [applyProfile],
+  );
 
-    void supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (cancelled) return;
-      if (session?.user) {
-        await loadProfile(session.user.id);
+  useEffect(() => {
+    let mounted = true;
+
+    async function init() {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!mounted) return;
+
+        if (session?.user) {
+          await loadProfile(session.user.id);
+        } else {
+          setUser(null);
+        }
+      } catch (e) {
+        console.error("[useSession] init error:", e);
+        if (mounted) setUser(null);
+      } finally {
+        if (mounted) setLoading(false);
       }
-      if (!cancelled) setLoading(false);
-    });
+    }
+
+    void init();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
+      if (event === "SIGNED_OUT") {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       if (session?.user) {
-        await loadProfile(session.user.id);
+        try {
+          await loadProfile(session.user.id);
+        } catch (e) {
+          console.error("[useSession] profile fetch error:", e);
+        } finally {
+          if (mounted) setLoading(false);
+        }
       } else {
         setUser(null);
+        if (mounted) setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => {
-      cancelled = true;
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [loadProfile]);
 
   const signOut = async () => {
+    setLoading(true);
     await supabase.auth.signOut();
     setUser(null);
+    setLoading(false);
   };
 
   const refreshProfile = useCallback(async () => {

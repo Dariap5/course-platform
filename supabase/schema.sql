@@ -11,6 +11,8 @@ create table if not exists public.users (
                  check (plan in ('free', 'course', 'course_community')),
   plan_activated_at timestamptz,
   completion_email_sent boolean not null default false,
+  course_completed boolean not null default false,
+  course_completed_at timestamptz,
   created_at   timestamptz default now(),
   updated_at   timestamptz default now()
 );
@@ -67,3 +69,16 @@ create policy "progress: own rows" on public.lesson_progress
 -- Если таблица users уже была без этого поля:
 alter table public.users
   add column if not exists completion_email_sent boolean not null default false;
+
+-- Прохождение курса (меню «Записаться на созвон», доступ к /completion)
+alter table public.users
+  add column if not exists course_completed boolean not null default false,
+  add column if not exists course_completed_at timestamptz;
+
+-- Уже получили письмо о завершении — считаем курс пройденным
+update public.users
+set
+  course_completed = true,
+  course_completed_at = coalesce(course_completed_at, updated_at)
+where completion_email_sent = true
+  and course_completed = false;

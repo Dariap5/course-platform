@@ -9,6 +9,9 @@ export type UserRow = {
   plan: PlanId;
   plan_activated_at: string | null;
   completion_email_sent: boolean;
+  /** После миграции БД всегда приходит; до миграции может отсутствовать */
+  course_completed?: boolean;
+  course_completed_at?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -49,6 +52,8 @@ export type Database = {
           plan?: PlanId;
           plan_activated_at?: string | null;
           completion_email_sent?: boolean;
+          course_completed?: boolean;
+          course_completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -61,6 +66,8 @@ export type Database = {
           plan?: PlanId;
           plan_activated_at?: string | null;
           completion_email_sent?: boolean;
+          course_completed?: boolean;
+          course_completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

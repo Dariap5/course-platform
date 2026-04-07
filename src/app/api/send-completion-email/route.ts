@@ -28,16 +28,10 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { error } = await sendCourseCompletionEmail({
+    await sendCourseCompletionEmail({
       to: email,
       name,
     });
-    if (error) {
-      return Response.json(
-        { ok: false, error: error.message },
-        { status: 502 },
-      );
-    }
   } catch (e) {
     const message = e instanceof Error ? e.message : "Ошибка отправки";
     return Response.json({ ok: false, error: message }, { status: 502 });

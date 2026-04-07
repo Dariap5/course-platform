@@ -34,7 +34,7 @@ function fireLesson4Confetti() {
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
   const router = useRouter();
-  const { user, loading: sessionLoading } = useSession();
+  const { user, loading: sessionLoading, refreshProfile } = useSession();
   const paid = hasCourseAccess(user);
   const [unlocked, setUnlocked] = useState(false);
   const [completedIds, setCompletedIds] = useState<number[]>([]);
@@ -107,11 +107,11 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId: user.id }),
         });
-        if (!res.ok) {
-          /* письмо — best effort */
+        if (res.ok) {
+          await refreshProfile();
         }
       } catch {
-        /* ignore */
+        /* письмо — best effort */
       }
     }
 

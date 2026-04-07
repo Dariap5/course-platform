@@ -94,7 +94,7 @@ export async function sendCourseCompletionEmail({
   to: string;
   name: string;
 }) {
-  return resend.emails.send({
+  const result = await resend.emails.send({
     from: FROM,
     to,
     subject: "🏆 Ты прошла курс — поздравляю!",
@@ -120,4 +120,10 @@ export async function sendCourseCompletionEmail({
       </a>
     `),
   });
+
+  if (result.error) {
+    throw new Error(`Resend error: ${JSON.stringify(result.error)}`);
+  }
+
+  return result;
 }

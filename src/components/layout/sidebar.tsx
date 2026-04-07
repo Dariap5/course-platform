@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, User, MessageCircle, Sparkles, KeyRound, X } from "lucide-react";
+import {
+  Home,
+  User,
+  MessageCircle,
+  Sparkles,
+  KeyRound,
+  X,
+  Trophy,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { COURSE_TITLE, LESSONS, SUPPORT_URL } from "@/lib/lessons-data";
 import { getCompletedLessons } from "@/lib/progress-storage";
@@ -110,6 +118,28 @@ export function Sidebar({
             </Link>
           );
         })}
+
+        {paid && user?.course_completed ? (
+          <Link
+            href="/completion"
+            className={cn(
+              "flex cursor-pointer items-center gap-2.5 rounded-[var(--r)] px-2 py-1.5 text-sm transition-colors",
+              pathname === "/completion"
+                ? "bg-[hsl(var(--bg-tertiary))] font-medium text-[hsl(var(--fg))]"
+                : "text-[hsl(var(--fg-muted))] hover:bg-[hsl(var(--bg-tertiary))] hover:text-[hsl(var(--fg))]",
+            )}
+          >
+            <Trophy className="h-4 w-4 shrink-0" strokeWidth={2} />
+            <span>Записаться на созвон</span>
+            <span
+              className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full"
+              style={{
+                background: "linear-gradient(135deg, #3B3BF5, #818CF8)",
+              }}
+              aria-hidden
+            />
+          </Link>
+        ) : null}
       </nav>
 
       <div className="mt-auto flex flex-col gap-2 pt-4">

@@ -2,7 +2,8 @@ import type { Lesson } from "@/types";
 
 export const COURSE_TITLE = "Точка сборки";
 
-export const AUTHOR_PHOTO = "/author.jpg";
+/** Портрет на экране поздравления и в данных курса */
+export const AUTHOR_PHOTO = "/landing/photo-dasha-2.png";
 
 export const AUTHOR_NAME = "Дарья";
 

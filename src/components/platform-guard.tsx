@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth/useSession";
 import { isPaidPlan } from "@/lib/plan-access";
 
@@ -17,9 +17,15 @@ export function PlatformGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, loading } = useSession();
+  const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
+    const t = setTimeout(() => setTimedOut(true), 5000);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (loading && !timedOut) return;
     if (!user) {
       router.replace("/login");
       return;
@@ -28,15 +34,16 @@ export function PlatformGuard({ children }: { children: React.ReactNode }) {
       router.replace("/activate");
       return;
     }
-  }, [user, loading, router, pathname]);
+  }, [user, loading, timedOut, router, pathname]);
 
-  if (loading) {
+  if (loading && !timedOut) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[hsl(var(--bg))] text-sm text-[hsl(var(--fg-muted))]">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[hsl(var(--bg))] text-sm text-[hsl(var(--fg-muted))]">
         <div
-          className="h-6 w-6 animate-spin rounded-full border-2 border-[#3B3BF5] border-t-transparent"
+          className="h-8 w-8 animate-spin rounded-full border-[3px] border-[hsl(var(--border))] border-t-[#3B3BF5]"
           aria-hidden
         />
+        <p>Загрузка…</p>
       </div>
     );
   }

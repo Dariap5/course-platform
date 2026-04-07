@@ -22,6 +22,12 @@ export function CompletionGuard() {
       router.replace("/tariffs");
       return;
     }
+
+    if (user.course_completed) {
+      setOk(true);
+      return;
+    }
+
     void isLesson4Complete(user.id).then((complete) => {
       if (!complete) {
         router.replace("/dashboard");
