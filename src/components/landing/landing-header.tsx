@@ -58,20 +58,20 @@ export function LandingHeader() {
         </span>
       </Link>
       <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-        <div className="header-nav-links hidden items-center gap-2 md:flex md:gap-3">
+        <div className="hidden items-center gap-2 md:flex md:gap-3">
           <Link
             href="/register"
             className="text-[13px] font-medium text-[var(--lg-fg2)] hover:text-[var(--lg-fg)]"
           >
             Регистрация
           </Link>
-          <Link
-            href="/login"
-            className="rounded-full border border-[var(--lg-border)] px-3 py-2 text-[13px] font-semibold text-[var(--lg-fg)] transition-colors hover:bg-[var(--lg-bg)]"
-          >
-            Войти
-          </Link>
         </div>
+        <Link
+          href="/login"
+          className="shrink-0 rounded-full border border-[var(--lg-border)] px-3 py-2 text-[13px] font-semibold text-[var(--lg-fg)] transition-colors hover:bg-[var(--lg-bg)]"
+        >
+          Войти
+        </Link>
         <a
           href="#pricing"
           className="header-cta landing-header-cta inline-flex min-h-[48px] items-center justify-center sm:min-h-0"

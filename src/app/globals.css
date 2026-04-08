@@ -734,8 +734,4 @@ body {
   header#header {
     padding: 12px 16px !important;
   }
-
-  .header-nav-links {
-    display: none !important;
-  }
 }
