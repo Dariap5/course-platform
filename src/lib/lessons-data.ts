@@ -29,9 +29,9 @@ export const FROM_EMAIL =
 export const LESSONS: Lesson[] = [
   {
     id: 1,
-    title: "Введение в курс",
+    title: "Аудит амбиций и ясность",
     description:
-      "Знакомство с программой, целями и тем, что тебя ждёт дальше",
+      "Три живые цели вместо двадцати мёртвых. Таблица — прямо во время просмотра.",
     duration: "15 мин",
     videoUrl: "",
     notionUrl: "https://www.notion.so",
@@ -39,8 +39,8 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 2,
-    title: "Основы и практика",
-    description: "Ключевые идеи модуля и первые шаги в работе с материалом",
+    title: "Психология «лени»: найди свой тип",
+    description: "Лень — сигнал. Разбираем тип и что делать без насилия над собой.",
     duration: "20 мин",
     videoUrl: "",
     notionUrl: "https://www.notion.so",
@@ -48,8 +48,8 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 3,
-    title: "Углубление",
-    description: "Разбираем нюансы и типичные вопросы",
+    title: "План на месяц и неделю",
+    description: "Трекер привычек и недельный планер, связанные с целями.",
     duration: "25 мин",
     videoUrl: "",
     notionUrl: "https://www.notion.so",
