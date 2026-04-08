@@ -264,29 +264,24 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* Комьюнити: как десктоп в покое — только иконка и заголовок, без шторки и текста */
   .shutter-card {
-    height: auto !important;
-    min-height: 0 !important;
+    height: 160px;
+    min-height: 160px;
+    cursor: default;
+  }
+
+  .shutter-card:hover .shutter-front,
+  .shutter-card:focus-within .shutter-front {
+    opacity: 1 !important;
   }
 
   .shutter-front {
-    display: none !important;
+    display: flex !important;
   }
 
   .shutter-back {
-    position: relative !important;
-    transform: translateY(0) !important;
-    border-radius: 16px !important;
-    min-height: 0 !important;
-    padding: 20px !important;
-  }
-
-  .shutter-back::before {
-    content: attr(data-icon);
-    font-size: 24px;
-    display: block;
-    margin-bottom: 8px;
-    text-align: center;
+    display: none !important;
   }
 }
 
@@ -397,5 +392,350 @@ body {
     margin-right: 0 !important;
     margin-bottom: 0 !important;
     border-radius: 20px 20px 0 0 !important;
+  }
+}
+
+/* ════════ МОБИЛЬНАЯ АДАПТАЦИЯ ЛЕНДИНГА (final-launch) ════════ */
+/* html/body overflow-x уже заданы выше */
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column !important;
+    padding: 120px 20px 92px !important;
+    gap: 48px !important;
+    align-items: center !important;
+    min-height: calc(100svh + 56px) !important;
+  }
+
+  .hero-content {
+    max-width: 100% !important;
+    text-align: center !important;
+    padding-top: 16px !important;
+  }
+
+  .hero-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-title {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.14em !important;
+    font-size: clamp(32px, 8vw, 50px) !important;
+    text-align: center !important;
+    line-height: 1.12 !important;
+  }
+
+  .hero-title-top {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.08em !important;
+  }
+
+  .hero-title-type-wrap {
+    text-align: center !important;
+    max-width: 100% !important;
+  }
+
+  .hero-title-trail {
+    margin-top: 0 !important;
+  }
+
+  .hero-title > span:first-child {
+    justify-content: center !important;
+  }
+
+  .hero-sub {
+    font-size: 15px !important;
+    text-align: center !important;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-cta-wrap {
+    align-items: center !important;
+    padding-bottom: 32px !important;
+  }
+
+  .hero-cta {
+    width: 100% !important;
+    max-width: 400px !important;
+    text-align: center !important;
+    font-size: 15px !important;
+    padding: 16px 24px !important;
+  }
+
+  .hero-social-mini {
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-photo-wrap {
+    width: 100% !important;
+    max-width: 360px !important;
+    margin: 0 auto !important;
+  }
+
+  .hero-photo-frame {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 3 / 4 !important;
+    min-height: 300px;
+  }
+
+  .hero-photo-frame img {
+    object-position: center top !important;
+  }
+
+  .hero-float-badge.float-card-1 {
+    top: -10px !important;
+    right: -4px !important;
+  }
+
+  .hero-float-badge.float-card-2 {
+    top: 100px !important;
+    right: -4px !important;
+  }
+
+  .hero-float-badge.float-card-3 {
+    bottom: -10px !important;
+    left: -4px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .float-card.hero-float-badge,
+  .hero-float-badge.float-card {
+    padding: 8px 10px !important;
+    min-width: auto !important;
+    gap: 6px !important;
+  }
+
+  .float-card.hero-float-badge strong,
+  .hero-float-badge.float-card .font-bold {
+    font-size: 11px !important;
+  }
+
+  .float-card.hero-float-badge small,
+  .hero-float-badge.float-card small {
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  section.quotes-section,
+  section.lessons-section,
+  section.outcomes-section,
+  section.after-section,
+  section.pricing-section,
+  section.faq-section,
+  section.final-cta-section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+  }
+
+  .section-inner,
+  .quotes-inner,
+  .pricing-inner,
+  .result-inner,
+  .after-inner,
+  .faq-list {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .section-title {
+    font-size: clamp(22px, 5.5vw, 32px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .section-sub {
+    font-size: 14px !important;
+    margin-bottom: 36px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .lessons-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .lesson-card {
+    padding: 20px 18px !important;
+  }
+
+  .lesson-num {
+    font-size: 28px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .lesson-title {
+    font-size: 15px !important;
+  }
+
+  .lesson-desc {
+    font-size: 13px !important;
+  }
+
+  .lesson-points li {
+    font-size: 12px !important;
+  }
+
+  .lesson-thumb {
+    height: 64px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .quotes-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .quote-card {
+    padding: 20px !important;
+  }
+
+  .quote-text {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .artifacts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .artifact-card-small {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 20px !important;
+  }
+
+  .artifact-img {
+    height: 160px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .result-item {
+    padding: 18px 16px !important;
+    gap: 14px !important;
+  }
+
+  .result-num {
+    font-size: 22px !important;
+    width: 36px !important;
+  }
+
+  .result-content h3 {
+    font-size: 15px !important;
+  }
+
+  .result-content p {
+    font-size: 13px !important;
+  }
+
+  .trigger-quote {
+    font-size: clamp(17px, 4.5vw, 22px) !important;
+    padding: 12px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .club-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 36px !important;
+  }
+
+  .after-call-block {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 24px 20px !important;
+  }
+
+  .after-call-text h3 {
+    font-size: 17px !important;
+  }
+
+  .after-call-text p {
+    font-size: 13px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .pricing-card {
+    padding: 24px 18px !important;
+  }
+
+  .pricing-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .price-amount {
+    font-size: 36px !important;
+  }
+
+  .pricing-card[class*="scale"],
+  [style*="scale(1.03)"] {
+    transform: none !important;
+  }
+
+  .pricing-includes {
+    gap: 10px !important;
+  }
+
+  .pricing-cta {
+    font-size: 15px !important;
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .faq-q {
+    font-size: 14px !important;
+    padding: 16px 4px !important;
+    gap: 12px !important;
+  }
+
+  .faq-a {
+    font-size: 13px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .final-cta-title {
+    font-size: clamp(26px, 6vw, 40px) !important;
+  }
+
+  .final-cta-btn {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 18px 24px !important;
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #header,
+  header#header {
+    padding: 12px 16px !important;
+  }
+
+  .header-nav-links {
+    display: none !important;
   }
 }

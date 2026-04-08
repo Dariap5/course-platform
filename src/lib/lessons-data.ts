@@ -25,43 +25,49 @@ export const FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL ??
   "onboarding@resend.dev";
 
-/** Замени videoUrl на свои ссылки (YouTube embed, Vimeo, MP4) когда будут готовы */
 export const LESSONS: Lesson[] = [
   {
     id: 1,
-    title: "Аудит амбиций и ясность",
+    title: "Аудит амбиций и Ясность",
     description:
-      "Три живые цели вместо двадцати мёртвых. Таблица — прямо во время просмотра.",
-    duration: "15 мин",
-    videoUrl: "",
-    notionUrl: "https://www.notion.so",
+      "Перестань хотеть «всё и сразу». Выбери три живые цели вместо двадцати мёртвых. Заполнишь таблицу прямо во время просмотра.",
+    duration: "13–15 мин",
+    videoUrl: "https://kinescope.io/qQVq59fvksnJ19YeCYrHpT",
+    notionUrl:
+      "https://tranquil-wedelia-414.notion.site/1-1-33cec0c8ebbb807d98fdf7465a1ed621?source=copy_link",
     notionLabel: "Открыть материалы урока",
   },
   {
     id: 2,
     title: "Психология «лени»: найди свой тип",
-    description: "Лень — сигнал. Разбираем тип и что делать без насилия над собой.",
-    duration: "20 мин",
-    videoUrl: "",
-    notionUrl: "https://www.notion.so",
+    description:
+      "Лень — это не характер, это сигнал. Разбираемся какой именно — и что с этим делать без насилия над собой.",
+    duration: "12–14 мин",
+    videoUrl: "https://kinescope.io/wCcx1Sf3GMfekEuRFhZhKi",
+    notionUrl:
+      "https://tranquil-wedelia-414.notion.site/1-33cec0c8ebbb8003b51dd29bc73cbda8?source=copy_link",
     notionLabel: "Открыть материалы урока",
   },
   {
     id: 3,
-    title: "План на месяц и неделю",
-    description: "Трекер привычек и недельный планер, связанные с целями.",
-    duration: "25 мин",
-    videoUrl: "",
-    notionUrl: "https://www.notion.so",
+    title: "Твой план на месяц и неделю",
+    description:
+      "Настраиваем два планера прямо во время ролика. Трекер привычек и недельный планер — связанные с твоими целями.",
+    duration: "13–15 мин",
+    videoUrl: "https://kinescope.io/8GWoYpDuy7XAZgQy8g3Hut",
+    notionUrl:
+      "https://tranquil-wedelia-414.notion.site/1-33bec0c8ebbb8009a4c4f2c5077791e8?source=copy_link",
     notionLabel: "Открыть материалы урока",
   },
   {
     id: 4,
-    title: "Финальный урок",
-    description: "Итоги курса и что делать дальше со всей этой системой",
-    duration: "18 мин",
-    videoUrl: "",
-    notionUrl: "https://www.notion.so",
+    title: "Что тебя ждёт дальше — Клуб",
+    description:
+      "Система собрана. Куда направить эту энергию? Знакомство с сообществом, треками и тем, что открывается после курса.",
+    duration: "8–10 мин",
+    videoUrl: "https://kinescope.io/w1scHbshk1uwvn7FFmCf85",
+    notionUrl:
+      "https://tranquil-wedelia-414.notion.site/1-78dec0c8ebbb8351b1928180cefb20d0?source=copy_link",
     notionLabel: "Открыть материалы урока",
   },
 ];

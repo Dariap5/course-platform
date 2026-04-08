@@ -56,7 +56,7 @@ function HeroFloatBadge({
   return (
     <div
       className={cn(
-        "hero-float-badge absolute z-[2] flex min-w-[155px] max-w-[min(100vw-3rem,260px)] items-center gap-2.5 rounded-[14px] bg-white px-4 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.10)]",
+        "hero-float-badge float-card absolute z-[2] flex min-w-[155px] max-w-[min(100vw-3rem,260px)] items-center gap-2.5 rounded-[14px] bg-white px-4 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.10)]",
         className,
       )}
       style={{ animationDelay: `${delaySec}s` }}
@@ -108,7 +108,7 @@ export function LandingPage() {
 
       <section
         id="hero"
-        className="hero relative flex min-h-[100svh] flex-col gap-14 overflow-hidden px-5 pb-20 pt-28 md:flex-row md:items-center md:justify-center md:gap-20 md:px-14 md:pb-24 md:pt-32"
+        className="hero relative flex min-h-[100svh] flex-col gap-16 overflow-hidden px-5 pb-28 pt-32 md:flex-row md:items-center md:justify-center md:gap-20 md:px-14 md:pb-24 md:pt-32"
       >
         <div
           className="landing-orb -right-24 -top-24 h-[min(500px,90vw)] w-[min(500px,90vw)] max-w-[500px]"
@@ -133,41 +133,20 @@ export function LandingPage() {
 
         <div className="hero-content relative z-10 mx-auto w-full max-w-[560px]">
           <motion.div
-            className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[rgba(59,59,245,0.22)] bg-[rgba(59,59,245,0.08)] px-3.5 py-1.5 text-xs font-semibold tracking-wide text-[var(--lg-from)]"
+            className="hero-badge mb-8 inline-flex items-center gap-1.5 rounded-full border border-[rgba(59,59,245,0.22)] bg-[rgba(59,59,245,0.08)] px-3.5 py-1.5 text-xs font-semibold tracking-wide text-[var(--lg-from)] md:mb-6"
             {...fadeUp}
           >
             <span className="text-[10px]">✦</span>
             Мини-курс · 4 урока · Сразу после оплаты
           </motion.div>
           <motion.h1 className="hero-title" {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }}>
-            <span
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: "12px",
-                flexWrap: "nowrap",
-              }}
-            >
-              <span style={{ whiteSpace: "nowrap" }}>Выйди</span>
-              <span
-                style={{
-                  display: "inline-block",
-                  minWidth: "200px",
-                  whiteSpace: "nowrap",
-                }}
-              >
+            <span className="hero-title-top">
+              <span className="shrink-0">Выйди</span>
+              <span className="hero-title-type-wrap">
                 <TypewriterWord />
               </span>
             </span>
-            <span
-              style={{
-                display: "block",
-                color: "var(--lg-fg)",
-                marginTop: "0.2em",
-              }}
-            >
-              Собери себя
-            </span>
+            <span className="hero-title-trail">Собери себя</span>
           </motion.h1>
           <motion.p
             className="hero-sub"
@@ -177,7 +156,7 @@ export function LandingPage() {
             Мини-курс, который помогает перестать крутиться на месте — и наконец-то
             двигаться туда, куда хочешь
           </motion.p>
-          <div className="hero-cta-wrap mt-8 flex flex-col gap-2.5">
+          <div className="hero-cta-wrap mt-9 flex flex-col gap-2.5 md:mt-8">
             <a
               href="#pricing"
               onClick={fireMiniConfetti}
@@ -195,7 +174,7 @@ export function LandingPage() {
               Или сначала зарегистрируйся в кабинете — уроки откроются после оплаты
             </Link>
           </div>
-          <div className="hero-social-mini mt-8 flex items-center gap-3">
+          <div className="hero-social-mini mt-12 flex items-center gap-3 md:mt-8">
             <div className="flex">
               {["А", "М", "К"].map((l, i) => (
                 <div
@@ -218,7 +197,7 @@ export function LandingPage() {
 
         <div className="hero-photo-wrap relative z-10 mx-auto w-full max-w-[340px] shrink-0">
           <div className="relative mx-auto w-full max-w-[320px]">
-            <div className="relative mx-auto h-[260px] w-full overflow-hidden rounded-3xl border-2 border-[var(--lg-border)] bg-[var(--lg-bg)] md:h-[400px]">
+            <div className="hero-photo-frame relative mx-auto aspect-[3/4] min-h-[300px] w-full overflow-hidden rounded-3xl border-2 border-[var(--lg-border)] bg-[var(--lg-bg)]">
               <HeroPhotoCarousel />
               <div
                 className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-transparent from-50% to-black/[0.15]"
@@ -230,21 +209,21 @@ export function LandingPage() {
               title="3 живые цели"
               sub="вместо 20 мёртвых"
               delaySec={0}
-              className="hero-float-badge--tr -right-4 -top-4"
+              className="hero-float-badge--tr float-card-1 -right-4 -top-4"
             />
             <HeroFloatBadge
               icon="⚡"
               title="4 урока"
               sub="по 13–15 минут"
               delaySec={1.5}
-              className="hero-float-badge--mr -right-3 top-[280px]"
+              className="hero-float-badge--mr float-card-2 -right-3 top-[280px]"
             />
             <HeroFloatBadge
               icon="🗂️"
               title="Notion + Таблицы"
               sub="уже готовы для тебя"
               delaySec={3}
-              className="hero-float-badge--bl -bottom-4 -left-6"
+              className="hero-float-badge--bl float-card-3 -bottom-4 -left-6"
             />
           </div>
         </div>
@@ -281,11 +260,11 @@ export function LandingPage() {
             ].map((q, i) => (
               <motion.div
                 key={i}
-                className="landing-glass rounded-[20px] p-6"
+                className="quote-card landing-glass rounded-[20px] p-6"
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: i * 0.08 }}
               >
-                <p className="mb-5 text-[15px] italic leading-relaxed text-[var(--lg-fg2)]">
+                <p className="quote-text mb-5 text-[15px] italic leading-relaxed text-[var(--lg-fg2)]">
                   {q.text}
                 </p>
                 <div className="flex items-center gap-3">
@@ -331,7 +310,7 @@ export function LandingPage() {
             <br />— никакой воды
           </motion.h2>
           <motion.p
-            className="mb-12 mt-4 max-w-[500px] text-base leading-relaxed text-[var(--lg-fg2)]"
+            className="section-sub mb-12 mt-4 max-w-[500px] text-base leading-relaxed text-[var(--lg-fg2)]"
             {...fadeUp}
           >
             Каждый урок — инструмент, который применяешь прямо во время просмотра
@@ -340,11 +319,11 @@ export function LandingPage() {
             {lessonCards.map((c, i) => (
               <motion.div
                 key={c.t}
-                className={`rounded-[20px] border border-[var(--lg-border)] p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_0_1.5px_var(--lg-from),0_16px_40px_rgba(59,59,245,0.12)] ${c.bonus ? "border-[rgba(59,59,245,0.22)] bg-gradient-to-br from-[rgba(59,59,245,0.06)] to-[rgba(129,140,248,0.06)]" : "bg-white"}`}
+                className={`lesson-card rounded-[20px] border border-[var(--lg-border)] p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_0_1.5px_var(--lg-from),0_16px_40px_rgba(59,59,245,0.12)] ${c.bonus ? "border-[rgba(59,59,245,0.22)] bg-gradient-to-br from-[rgba(59,59,245,0.06)] to-[rgba(129,140,248,0.06)]" : "bg-white"}`}
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: i * 0.06 }}
               >
-                <div className="font-landing-display text-4xl font-black leading-none">
+                <div className="lesson-num font-landing-display text-4xl font-black leading-none">
                   <span className="landing-gradient-text">{c.num}</span>
                 </div>
                 <span
@@ -352,13 +331,13 @@ export function LandingPage() {
                 >
                   {c.badge}
                 </span>
-                <h3 className="font-landing-display mt-4 text-[17px] font-bold leading-snug text-[var(--lg-fg)]">
+                <h3 className="lesson-title font-landing-display mt-4 text-[17px] font-bold leading-snug text-[var(--lg-fg)]">
                   {c.t}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--lg-fg2)]">
+                <p className="lesson-desc mt-2 text-sm leading-relaxed text-[var(--lg-fg2)]">
                   {c.d}
                 </p>
-                <ul className="mt-4 flex flex-col gap-1.5">
+                <ul className="lesson-points mt-4 flex flex-col gap-1.5">
                   {c.points.map((p) => (
                     <li
                       key={p}
@@ -368,7 +347,7 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="relative mt-5 aspect-video min-h-[200px] w-full overflow-hidden rounded-[12px] border border-[var(--lg-border)] bg-[var(--lg-bg)] sm:min-h-[220px] md:min-h-[240px]">
+                <div className="lesson-thumb relative mt-5 aspect-video min-h-[200px] w-full overflow-hidden rounded-[12px] border border-[var(--lg-border)] bg-[var(--lg-bg)] sm:min-h-[220px] md:min-h-[240px]">
                   <Image
                     src={c.preview}
                     alt={`Превью: ${c.t}`}
@@ -401,8 +380,8 @@ const lessonCards = [
   {
     num: "01",
     badge: "13–15 мин",
-    t: "Аудит амбиций и ясность",
-    d: "Три живые цели вместо двадцати мёртвых. Таблица — прямо во время просмотра.",
+    t: "Аудит амбиций и Ясность",
+    d: "Перестань хотеть «всё и сразу». Три живые цели и таблица — прямо во время просмотра.",
     points: [
       "Почему цели не работали (3 ловушки)",
       "Образ жизни в 40 лет → цели сегодня",
@@ -415,7 +394,7 @@ const lessonCards = [
     num: "02",
     badge: "12–14 мин",
     t: "Психология «лени»: найди свой тип",
-    d: "Лень — сигнал. Разбираем тип и что делать без насилия над собой.",
+    d: "Лень — сигнал. Разбираемся какой именно и что делать без насилия над собой.",
     points: [
       "Тип 1: истощение",
       "Тип 2: отвлечение — 3 протокола",
@@ -427,8 +406,8 @@ const lessonCards = [
   {
     num: "03",
     badge: "13–15 мин",
-    t: "План на месяц и неделю",
-    d: "Трекер привычек и недельный планер, связанные с целями.",
+    t: "Твой план на месяц и неделю",
+    d: "Два планера прямо во время ролика: трекер привычек и недельный планер под твои цели.",
     points: [
       "Месячный трекер с аналитикой",
       "Одна главная задача в день",
@@ -441,7 +420,7 @@ const lessonCards = [
     num: "04",
     badge: "Бонус",
     t: "Что тебя ждёт дальше — Клуб",
-    d: "Куда направить энергию после курса: сообщество и треки.",
+    d: "Система собрана. Сообщество, треки и что открывается после курса.",
     points: [
       "Карьера, бизнес, деньги, эффективность",
       "Диагностика точки роста",
@@ -478,7 +457,7 @@ function OutcomesSection() {
             className="group overflow-hidden rounded-[20px] border border-[var(--lg-border)] bg-white transition hover:-translate-y-1 hover:shadow-xl"
             {...fadeUp}
           >
-            <div className="relative h-[200px] w-full bg-[var(--lg-bg)]">
+            <div className="artifact-img relative h-[200px] w-full bg-[var(--lg-bg)]">
               <Image
                 src={LANDING_NOTION_PREVIEW}
                 alt="База знаний в Notion"
@@ -504,7 +483,7 @@ function OutcomesSection() {
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: 0.08 }}
           >
-            <div className="relative h-[200px] w-full bg-[var(--lg-bg)]">
+            <div className="artifact-img relative h-[200px] w-full bg-[var(--lg-bg)]">
               <Image
                 src={LANDING_PLANNER_PREVIEW}
                 alt="Планеры в Google Таблицах"
@@ -583,10 +562,10 @@ function ResultSection() {
             <div key={r.n}>
               {i > 0 && <div className="h-px bg-[var(--lg-border)]" />}
               <div className="result-item flex gap-6 p-8 transition-colors hover:bg-[var(--lg-bg)]">
-                <span className="font-landing-display shrink-0 bg-gradient-to-br from-[var(--lg-from)] to-[var(--lg-to)] bg-clip-text py-0.5 text-[28px] font-black leading-none text-transparent sm:min-w-[3.75rem] min-w-[3.25rem]">
+                <span className="result-num font-landing-display shrink-0 bg-gradient-to-br from-[var(--lg-from)] to-[var(--lg-to)] bg-clip-text py-0.5 text-[28px] font-black leading-none text-transparent sm:min-w-[3.75rem] min-w-[3.25rem]">
                   {r.n}
                 </span>
-                <div className="min-w-0 flex-1">
+                <div className="result-content min-w-0 flex-1">
                   <h3 className="font-landing-display text-[17px] font-bold text-[var(--lg-fg)]">
                     {r.t}
                   </h3>
@@ -677,7 +656,7 @@ function AfterSection() {
         </motion.p>
 
         <div
-          className="mb-[52px] grid gap-4"
+          className="club-grid mb-[52px] grid gap-4"
           style={{
             gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           }}
@@ -870,11 +849,11 @@ function PricingSection({
             </p>
             <div className="mt-6 flex items-baseline gap-1">
               <span className="font-landing-display text-lg font-bold text-[var(--lg-fg)]">₽</span>
-              <span className="font-landing-display text-5xl font-black tracking-tight text-[var(--lg-fg)]">
+              <span className="price-amount font-landing-display text-5xl font-black tracking-tight text-[var(--lg-fg)]">
                 1 990
               </span>
             </div>
-            <ul className="mt-8 flex flex-col gap-3 border-t border-[var(--lg-border)] pt-6">
+            <ul className="pricing-includes mt-8 flex flex-col gap-3 border-t border-[var(--lg-border)] pt-6">
               {[
                 "4 видеоурока (доступ навсегда)",
                 "Notion + Google Таблицы + PDF",
@@ -893,7 +872,7 @@ function PricingSection({
               target="_blank"
               rel="noopener noreferrer"
               onClick={onConfetti}
-              className="landing-btn-gradient landing-btn-pulse relative z-0 mt-8 block w-full rounded-2xl py-4 text-center font-landing-display text-sm font-semibold"
+              className="pricing-cta landing-btn-gradient landing-btn-pulse relative z-0 mt-8 block w-full rounded-2xl py-4 text-center font-landing-display text-sm font-semibold"
             >
               Написать Даше
             </a>
@@ -921,14 +900,14 @@ function PricingSection({
                 </p>
                 <div className="mt-6 flex items-baseline gap-1">
                   <span className="font-landing-display text-lg font-bold text-[var(--lg-fg)]">₽</span>
-                  <span className="price-shimmer font-landing-display text-[44px] font-black tracking-tight">
+                  <span className="price-amount price-shimmer font-landing-display text-[44px] font-black tracking-tight">
                     3 990
                   </span>
                 </div>
                 <p className="mt-1 text-[11px] text-[var(--lg-fg3)] line-through">
                   Комьюнити отдельно — 2 400 ₽/мес
                 </p>
-                <ul className="mt-8 flex flex-col gap-3 border-t border-[var(--lg-border)] pt-6">
+                <ul className="pricing-includes mt-8 flex flex-col gap-3 border-t border-[var(--lg-border)] pt-6">
                   {[
                     "Всё из тарифа «Мини-курс»",
                     "Первый месяц в Комьюнити",
@@ -947,7 +926,7 @@ function PricingSection({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={onConfetti}
-                  className="pricing-pro-cta mt-8 font-landing-display text-sm font-semibold"
+                  className="pricing-cta pricing-pro-cta mt-8 font-landing-display text-sm font-semibold"
                 >
                   Написать Даше
                 </a>
@@ -989,7 +968,7 @@ function FaqSection({
         <h2 className="section-title font-landing-display text-3xl font-black text-[var(--lg-fg)]">
           Часто спрашивают
         </h2>
-        <div className="mt-10 border-t border-[var(--lg-border)]">
+        <div className="faq-list mt-10 border-t border-[var(--lg-border)]">
           {faqItems.map((item, i) => {
             const open = openFaq === i;
             return (
@@ -1008,7 +987,7 @@ function FaqSection({
                   className={`grid transition-[grid-template-rows] duration-300 ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                 >
                   <div className="overflow-hidden">
-                    <p className="pb-5 pl-0 pr-8 text-sm leading-relaxed text-[var(--lg-fg2)]">
+                    <p className="faq-a pb-5 pl-0 pr-8 text-sm leading-relaxed text-[var(--lg-fg2)]">
                       {item.a}
                     </p>
                   </div>
@@ -1036,7 +1015,7 @@ function FinalCta({
         style={{ background: "#3b3bf5", opacity: 0.14 }}
       />
       <div className="relative z-10 mx-auto max-w-[600px]">
-        <h2 className="font-landing-display text-[clamp(1.75rem,5vw,3.25rem)] font-black leading-tight text-[var(--lg-fg)]">
+        <h2 className="final-cta-title font-landing-display text-[clamp(1.75rem,5vw,3.25rem)] font-black leading-tight text-[var(--lg-fg)]">
           Начни собирать себя
           <br />
           <span className="landing-gradient-text">прямо сейчас</span>
