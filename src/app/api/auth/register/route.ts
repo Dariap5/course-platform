@@ -17,7 +17,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email, name, password } = await req.json();
+    const body = await req.json();
+    const emailRaw = String(body.email ?? "").trim().toLowerCase();
+    const name = String(body.name ?? "").trim();
+    const password = String(body.password ?? "");
+
+    const email = emailRaw;
 
     if (!email || !name || !password) {
       return NextResponse.json({ error: "Заполни все поля" }, { status: 400 });

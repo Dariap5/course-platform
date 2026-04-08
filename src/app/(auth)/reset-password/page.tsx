@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase/client";
 import { COURSE_TITLE } from "@/lib/lessons-data";
+import { isPaidPlan } from "@/lib/plan-access";
+import { useSession } from "@/lib/auth/useSession";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
+  const { refreshProfile } = useSession();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -56,7 +59,36 @@ export default function ResetPasswordPage() {
       setError("Не удалось обновить пароль. Попробуй ещё раз.");
       return;
     }
-    router.replace("/dashboard");
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.user) {
+      setError("Сессия сброшена. Войди с новым паролем со страницы входа.");
+      return;
+    }
+    if (session.access_token) {
+      await fetch("/api/auth/ensure-profile", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+    }
+
+    const { data: profile } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    await refreshProfile();
+
+    if (!profile) {
+      setError("Пароль обновлён, но профиль не найден. Напиши в поддержку.");
+      return;
+    }
+    if (!profile.name?.trim()) router.replace("/onboarding");
+    else if (!isPaidPlan(profile.plan)) router.replace("/activate");
+    else router.replace("/dashboard");
   }
 
   if (!ready) {

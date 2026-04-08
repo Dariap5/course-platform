@@ -8,6 +8,21 @@ type GenerateLinkResponse = {
   };
 };
 
+async function findProfileByEmail(email: string) {
+  const r1 = await supabaseAdmin
+    .from("users")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+  if (r1.data) return r1.data;
+  const r2 = await supabaseAdmin
+    .from("users")
+    .select("id")
+    .ilike("email", email)
+    .maybeSingle();
+  return r2.data ?? null;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { email } = (await req.json()) as { email?: string };
@@ -15,6 +30,14 @@ export async function POST(req: NextRequest) {
 
     if (!cleanEmail) {
       return NextResponse.json({ error: "Email обязателен" }, { status: 400 });
+    }
+
+    const profile = await findProfileByEmail(cleanEmail);
+    if (!profile) {
+      return NextResponse.json(
+        { ok: false, code: "NOT_REGISTERED" as const },
+        { status: 404 },
+      );
     }
 
     const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/reset-password`;
@@ -27,7 +50,6 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       console.error("[forgot-password] generateLink:", error.message);
-      // Не выдаем пользователю, существует ли email
       return NextResponse.json({ ok: true });
     }
 

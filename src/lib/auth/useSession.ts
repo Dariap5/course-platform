@@ -21,12 +21,40 @@ export function useSession() {
 
   const loadProfile = useCallback(
     async (userId: string) => {
-      const { data } = await supabase
+      const { data: row } = await supabase
         .from("users")
         .select("*")
         .eq("id", userId)
-        .single();
-      applyProfile(data ?? null);
+        .maybeSingle();
+
+      if (row) {
+        applyProfile(row);
+        return;
+      }
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        applyProfile(null);
+        return;
+      }
+
+      const res = await fetch("/api/auth/ensure-profile", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) {
+        applyProfile(null);
+        return;
+      }
+
+      const { data: again } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .maybeSingle();
+      applyProfile(again ?? null);
     },
     [applyProfile],
   );

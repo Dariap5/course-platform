@@ -22,7 +22,8 @@ export default function ForgotPasswordPage() {
   useEffect(() => {
     if (sessionLoading) return;
     if (user) {
-      if (isPaidPlan(user.plan)) router.replace("/dashboard");
+      if (!user.name?.trim()) router.replace("/onboarding");
+      else if (isPaidPlan(user.plan)) router.replace("/dashboard");
       else router.replace("/activate");
       return;
     }
@@ -45,9 +46,21 @@ export default function ForgotPasswordPage() {
     const res = await fetch("/api/auth/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email.trim() }),
+      body: JSON.stringify({ email: email.trim().toLowerCase() }),
     });
+    let payload: { ok?: boolean; code?: string; error?: string } = {};
+    try {
+      payload = (await res.json()) as typeof payload;
+    } catch {
+      /* noop */
+    }
     setLoading(false);
+    if (res.status === 404 && payload.code === "NOT_REGISTERED") {
+      setError(
+        "Аккаунта с таким email нет в платформе — сначала пройди регистрацию.",
+      );
+      return;
+    }
     if (!res.ok) {
       setError("Не удалось отправить письмо. Проверь email.");
       return;
@@ -117,7 +130,17 @@ export default function ForgotPasswordPage() {
             />
           </div>
           {error ? (
-            <p className="text-center text-xs text-red-500">{error}</p>
+            <p className="text-center text-xs text-red-500">
+              {error}{" "}
+              {error.includes("регистрацию") ? (
+                <Link
+                  href="/register"
+                  className="font-medium text-[hsl(var(--accent-text))] underline-offset-2 hover:underline"
+                >
+                  Регистрация
+                </Link>
+              ) : null}
+            </p>
           ) : null}
           <Button
             type="submit"

@@ -15,6 +15,10 @@ export default function ActivatePage() {
 
   useEffect(() => {
     if (sessionLoading || !user) return;
+    if (!user.name?.trim()) {
+      router.replace("/onboarding");
+      return;
+    }
     if (isPaidPlan(user.plan)) router.replace("/dashboard");
   }, [sessionLoading, user, router]);
 

@@ -28,7 +28,8 @@ export function RegisterForm() {
   useEffect(() => {
     if (sessionLoading) return;
     if (user) {
-      if (isPaidPlan(user.plan)) router.replace("/dashboard");
+      if (!user.name?.trim()) router.replace("/onboarding");
+      else if (isPaidPlan(user.plan)) router.replace("/dashboard");
       else router.replace("/activate");
       return;
     }
@@ -48,7 +49,7 @@ export function RegisterForm() {
     setError("");
     const fd = new FormData(e.currentTarget);
     const name = String(fd.get("name") ?? "").trim();
-    const email = String(fd.get("email") ?? "").trim();
+    const email = String(fd.get("email") ?? "").trim().toLowerCase();
     const password = String(fd.get("password") ?? "");
     if (!name || !email || !password) return;
     if (password.length < 8) {

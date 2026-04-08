@@ -21,7 +21,8 @@ export default function LoginPage() {
   useEffect(() => {
     if (sessionLoading) return;
     if (user) {
-      if (isPaidPlan(user.plan)) router.replace("/dashboard");
+      if (!user.name?.trim()) router.replace("/onboarding");
+      else if (isPaidPlan(user.plan)) router.replace("/dashboard");
       else router.replace("/activate");
       return;
     }
@@ -40,7 +41,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     const fd = new FormData(e.currentTarget);
-    const email = String(fd.get("email") ?? "").trim();
+    const email = String(fd.get("email") ?? "").trim().toLowerCase();
     const password = String(fd.get("password") ?? "");
     if (!email || !password) return;
     setSubmitting(true);
@@ -50,11 +51,55 @@ export default function LoginPage() {
     });
     setSubmitting(false);
     if (signErr) {
-      setError("Неверный email или пароль");
+      try {
+        const lr = await fetch("/api/auth/lookup-account", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        const lj = (await lr.json()) as { registered?: boolean };
+        if (lj.registered === false) {
+          setError(
+            "Аккаунта с таким email нет. Зарегистрируйся или проверь написание.",
+          );
+          return;
+        }
+      } catch {
+        /* noop */
+      }
+      setError("Неверный пароль. Попробуй ещё или восстанови доступ.");
       return;
     }
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.user) {
+      setError("Не удалось войти. Попробуй ещё раз.");
+      return;
+    }
+    if (session.access_token) {
+      await fetch("/api/auth/ensure-profile", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+    }
+
+    const { data: profile } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
     router.refresh();
-    router.replace("/dashboard");
+
+    if (!profile) {
+      setError("Не удалось загрузить профиль. Напиши в поддержку.");
+      return;
+    }
+    if (!profile.name?.trim()) router.replace("/onboarding");
+    else if (!isPaidPlan(profile.plan)) router.replace("/activate");
+    else router.replace("/dashboard");
   }
 
   return (
@@ -107,7 +152,17 @@ export default function LoginPage() {
             </div>
           </div>
           {error ? (
-            <p className="text-center text-xs text-red-500">{error}</p>
+            <p className="text-center text-xs text-red-500">
+              {error}{" "}
+              {error.includes("Аккаунта с таким email нет") ? (
+                <Link
+                  href="/register"
+                  className="font-medium text-[hsl(var(--accent-text))] underline-offset-2 hover:underline"
+                >
+                  Регистрация
+                </Link>
+              ) : null}
+            </p>
           ) : null}
           <Button
             type="submit"
