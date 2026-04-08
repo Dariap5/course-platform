@@ -119,7 +119,7 @@ export function Sidebar({
           );
         })}
 
-        {paid && user?.course_completed ? (
+        {paid && done >= LESSONS.length ? (
           <Link
             href="/completion"
             className={cn(

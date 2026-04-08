@@ -143,7 +143,7 @@ export function TariffsPageContent() {
           </p>
           <p className="mt-4">
             <span className="gradient-text font-sans text-4xl font-black">
-              4 990 ₽
+              3 990 ₽
             </span>
           </p>
           <ul className="mt-6 space-y-2 text-sm text-[hsl(var(--fg-muted))]">

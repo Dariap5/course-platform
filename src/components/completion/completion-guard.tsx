@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isLesson4Complete } from "@/lib/progress-storage";
+import { getCompletedLessons } from "@/lib/progress-storage";
 import { hasCourseAccess } from "@/lib/plan-access";
 import { CompletionPageContent } from "./completion-page";
 import { useSession } from "@/lib/auth/useSession";
+import { LESSONS } from "@/lib/lessons-data";
 
 export function CompletionGuard() {
   const router = useRouter();
@@ -23,13 +24,8 @@ export function CompletionGuard() {
       return;
     }
 
-    if (user.course_completed) {
-      setOk(true);
-      return;
-    }
-
-    void isLesson4Complete(user.id).then((complete) => {
-      if (!complete) {
+    void getCompletedLessons(user.id).then((ids) => {
+      if (ids.length < LESSONS.length) {
         router.replace("/dashboard");
         return;
       }
