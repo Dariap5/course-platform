@@ -43,7 +43,7 @@ export const LESSONS: Lesson[] = [
     description:
       "Лень — это не характер, это сигнал. Разбираемся какой именно — и что с этим делать без насилия над собой.",
     duration: "12–14 мин",
-    videoUrl: "https://kinescope.io/wCcx1Sf3GMfekEuRFhZhKi",
+    videoUrl: "https://kinescope.io/wCcx1Sf3GMfekEuRFhZjKi",
     notionUrl:
       "https://tranquil-wedelia-414.notion.site/1-33cec0c8ebbb8003b51dd29bc73cbda8?source=copy_link",
     notionLabel: "Открыть материалы урока",
