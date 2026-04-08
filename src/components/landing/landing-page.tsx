@@ -216,7 +216,7 @@ export function LandingPage() {
               title="4 урока"
               sub="по 13–15 минут"
               delaySec={1.5}
-              className="hero-float-badge--mr float-card-2 -right-3 top-[280px]"
+              className="hero-float-badge--mr float-card-2 -right-3 top-[328px]"
             />
             <HeroFloatBadge
               icon="🗂️"
