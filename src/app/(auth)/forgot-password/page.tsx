@@ -5,7 +5,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/lib/supabase/client";
 import { COURSE_TITLE } from "@/lib/lessons-data";
 import { useSession } from "@/lib/auth/useSession";
 import { isPaidPlan } from "@/lib/plan-access";
@@ -43,12 +42,13 @@ export default function ForgotPasswordPage() {
     if (!email.trim()) return;
     setLoading(true);
     setError("");
-    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
-      email.trim(),
-      { redirectTo: `${window.location.origin}/reset-password` },
-    );
+    const res = await fetch("/api/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.trim() }),
+    });
     setLoading(false);
-    if (resetErr) {
+    if (!res.ok) {
       setError("Не удалось отправить письмо. Проверь email.");
       return;
     }

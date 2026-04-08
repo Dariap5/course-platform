@@ -127,3 +127,40 @@ export async function sendCourseCompletionEmail({
 
   return result;
 }
+
+export async function sendPasswordResetEmail({
+  to,
+  resetUrl,
+}: {
+  to: string;
+  resetUrl: string;
+}) {
+  const result = await resend.emails.send({
+    from: FROM,
+    to,
+    subject: "Сброс пароля · Точка сборки",
+    html: wrap(`
+      <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">
+        Сброс пароля
+      </h1>
+      <p style="font-size: 15px; line-height: 1.7; color: #404040; margin-bottom: 20px;">
+        Мы получили запрос на смену пароля. Нажми кнопку ниже, чтобы задать новый пароль.
+      </p>
+      <a href="${resetUrl}"
+         style="display: inline-block; background: #3B3BF5; color: white;
+                padding: 14px 28px; border-radius: 10px; text-decoration: none;
+                font-weight: 700; font-size: 15px;">
+        Сбросить пароль
+      </a>
+      <p style="font-size: 13px; color: #737373; line-height: 1.6; margin-top: 20px;">
+        Если ты не запрашивала смену пароля, просто проигнорируй это письмо.
+      </p>
+    `),
+  });
+
+  if (result.error) {
+    throw new Error(`Resend error: ${JSON.stringify(result.error)}`);
+  }
+
+  return result;
+}
