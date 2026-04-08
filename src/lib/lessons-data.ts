@@ -58,7 +58,7 @@ export const LESSONS: Lesson[] = [
   {
     id: 4,
     title: "Финальный урок",
-    description: "Итоги курса и что делать дальше",
+    description: "Итоги курса и что делать дальше со всей этой системой",
     duration: "18 мин",
     videoUrl: "",
     notionUrl: "https://www.notion.so",
